@@ -2,7 +2,7 @@
 
 """
 The `AbstractChar` type is the supertype of all character implementations
-in Julia.   A character represents a Unicode code point, and can be converted
+in Julia. A character represents a Unicode code point, and can be converted
 to an integer via the [`codepoint`](@ref) function in order to obtain the
 numerical value of the code point, or constructed from the same integer.
 These numerical values determine how characters are compared with `<` and `==`,
@@ -11,7 +11,7 @@ method and a `T(::UInt32)` constructor, at minimum.
 
 A given `AbstractChar` subtype may be capable of representing only a subset
 of Unicode, in which case conversion from an unsupported `UInt32` value
-may throw an error.  Conversely, the built-in [`Char`](@ref) type represents
+may throw an error. Conversely, the built-in [`Char`](@ref) type represents
 a *superset* of Unicode (in order to losslessly encode invalid byte streams),
 in which case conversion of a non-Unicode value *to* `UInt32` throws an error.
 The [`isvalid`](@ref) function can be used to check which codepoints are
@@ -34,7 +34,7 @@ AbstractChar
     Char(c::Union{Number,AbstractChar})
 
 `Char` is a 32-bit [`AbstractChar`](@ref) type that is the default representation
-of characters in Julia.  `Char` is the type used for character literals like `'x'`
+of characters in Julia. `Char` is the type used for character literals like `'x'`
 and it is also the element type of [`String`](@ref).
 
 In order to losslessly represent arbitrary byte streams stored in a `String`,
@@ -50,10 +50,8 @@ Char
 (::Type{T})(x::AbstractChar) where {T<:Union{Number,AbstractChar}} = T(codepoint(x))
 (::Type{T})(x::T) where {T<:AbstractChar} = x
 
-codepoint(c::Char) = UInt32(c)
-
 """
-    codepoint(c::AbstractChar)
+    codepoint(c::AbstractChar) -> UInt32
 
 Return the Unicode codepoint (an unsigned integer) corresponding
 to the character `c` (or throw an exception if `c` does not represent
@@ -61,7 +59,7 @@ a valid character).   For `Char`, this is a `UInt32` value, but
 `AbstractChar` types that represent only a subset of Unicode may
 return a different-sized integer (e.g. `UInt8`).
 """
-codepoint # defined for Char in boot.jl
+codepoint(c::Char) = UInt32(c)
 
 struct InvalidCharError{T<:AbstractChar} <: Exception
     char::T
@@ -91,7 +89,7 @@ end
 #           not to support malformed or overlong encodings.
 
 """
-    ismalformed(c::AbstractChar)
+    ismalformed(c::AbstractChar) -> Bool
 
 Return `true` if `c` represents malformed (non-Unicode) data according to the
 encoding used by `c`.  Defaults to `false` for non-`Char` types.  See also
@@ -100,7 +98,7 @@ encoding used by `c`.  Defaults to `false` for non-`Char` types.  See also
 ismalformed(c::AbstractChar) = false
 
 """
-    isoverlong(c::AbstractChar)
+    isoverlong(c::AbstractChar) -> Bool
 
 Return `true` if `c` represents an overlong UTF-8 sequence.  Defaults
 to `false` for non-`Char` types.  See also [`decode_overlong`](@ref)
@@ -134,7 +132,7 @@ function decode_overlong(c::Char)
 end
 
 """
-    decode_overlong(c::AbstractChar)
+    decode_overlong(c::AbstractChar) -> UInt32
 
 When [`isoverlong(c)`](@ref) is `true`, `decode_overlong(c)` returns
 the Unicode codepoint value of `c`.   `AbstractChar` implementations
