@@ -51,6 +51,15 @@ Char
 (::Type{T})(x::T) where {T<:AbstractChar} = x
 
 """
+    ncodeunits(c::Char) -> Int
+
+Return the number of code units required to encode a character as UTF-8.
+This is the number of bytes which will be printed if the character is written
+to an output stream, or `ncodeunits(string(c))` but computed efficiently.
+"""
+ncodeunits(c::Char) = max(1, 4 - (trailing_zeros(reinterpret(UInt32, c)) >> 3))
+
+"""
     codepoint(c::AbstractChar) -> UInt32
 
 Return the Unicode codepoint (an unsigned integer) corresponding
